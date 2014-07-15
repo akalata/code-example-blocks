@@ -1,0 +1,4 @@
+name = TMAP Blocks
+description = "Custom blocks for the TMAP D7 site"
+package = TMAP
+core = 7.x

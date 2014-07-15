@@ -1,0 +1,80 @@
+<?php
+
+
+function lytical_social_media_services() {
+  return array('Facebook', 'Twitter', 'LinkedIn', 'YouTube', 'RSS');
+}
+
+/**
+ * Implementation of hook_block_info().
+ */
+function lytical_blocks_block_info() {
+  $blocks['copyright'] = array(
+    'info' => t('Copyright block with dynamic year'),
+  );
+  $blocks['social_media_links'] = array(
+    'info' => t('Social media links'),
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function lytical_blocks_block_configure($delta = '') {
+  if ($delta == 'social_media_links') {
+    $form = array();
+    $services = lytical_social_media_services();
+    foreach ($services as $service) {
+      $lower = strtolower($service);
+      $form['lytical_blocks_' . $lower] = array(
+        '#type' => 'textfield',
+        '#title' => $service . ' link',
+        '#default_value' => variable_get('lytical_blocks_' . $lower, '')
+      );
+    }
+    return $form;
+  }
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function lytical_blocks_block_save($delta = '', $edit = array()) {
+  if ($delta == 'social_media_links') {
+    $services = lytical_social_media_services();
+    foreach ($services as $service) {
+      $lower = strtolower($service);
+      variable_set('lytical_blocks_' . $lower, $edit['lytical_blocks_' . $lower]);
+    }
+  }
+
+}
+/**
+ * Implementation fo hook_block_view().
+ */
+function lytical_blocks_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'copyright':
+      $block['content'] = '<p>' . t('&copy !year. All Rights Reserved.', array('!year' => date('Y'))) . '</p>';
+      break;
+
+    case 'social_media_links':
+      $items = array();
+      $services = lytical_social_media_services();
+      foreach ($services as $service) {
+        $lower = strtolower($service);
+        $items[] = l('<i class="fa fa-' . $lower . '"></i>', variable_get('lytical_blocks_' . $lower), array('html' => TRUE));
+      }
+      $variables = array(
+        'items' => $items,
+        'type' => 'ul'
+      );
+      $block['content'] = theme('item_list', $variables);
+      break;
+  }
+  return $block;
+}
