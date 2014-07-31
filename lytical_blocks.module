@@ -52,7 +52,9 @@ function lytical_blocks_block_save($delta = '', $edit = array()) {
     $services = lytical_social_media_services();
     foreach ($services as $service => $class) {
       $lower = strtolower($service);
-      variable_set('lytical_blocks_' . $lower, $edit['lytical_blocks_' . $lower]);
+      if ($edit['lytical_blocks_' . $lower] != '') {
+        variable_set('lytical_blocks_' . $lower, $edit['lytical_blocks_' . $lower]);
+      }
     }
   }
 
@@ -73,7 +75,9 @@ function lytical_blocks_block_view($delta = '') {
       $services = lytical_social_media_services();
       foreach ($services as $service => $class) {
         $lower = strtolower($service);
-        $items[] = l('<i class="fa fa-' . $class . '"></i>', variable_get('lytical_blocks_' . $lower), array('html' => TRUE));
+        if (variable_get('lytical_blocks_' . $lower)) {
+          $items[] = l('<i class="fa fa-' . $class . '"></i>', variable_get('lytical_blocks_' . $lower), array('html' => TRUE));
+        }
       }
       $variables = array(
         'items' => $items,
