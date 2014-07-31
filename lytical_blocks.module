@@ -1,8 +1,14 @@
 <?php
 
-
 function lytical_social_media_services() {
-  return array('Facebook', 'Twitter', 'LinkedIn', 'YouTube', 'RSS');
+  return array(
+    // Field name => fontawesome-class
+    'Drupal' => 'drupal',
+    'Twitter' => 'twitter-square',
+    'LinkedIn' => 'linkedin-square',
+    'Github' => 'github-alt',
+    'RSS' => 'rss-square',
+  );
 }
 
 /**
@@ -26,7 +32,7 @@ function lytical_blocks_block_configure($delta = '') {
   if ($delta == 'social_media_links') {
     $form = array();
     $services = lytical_social_media_services();
-    foreach ($services as $service) {
+    foreach ($services as $service => $class) {
       $lower = strtolower($service);
       $form['lytical_blocks_' . $lower] = array(
         '#type' => 'textfield',
@@ -44,7 +50,7 @@ function lytical_blocks_block_configure($delta = '') {
 function lytical_blocks_block_save($delta = '', $edit = array()) {
   if ($delta == 'social_media_links') {
     $services = lytical_social_media_services();
-    foreach ($services as $service) {
+    foreach ($services as $service => $class) {
       $lower = strtolower($service);
       variable_set('lytical_blocks_' . $lower, $edit['lytical_blocks_' . $lower]);
     }
@@ -65,15 +71,16 @@ function lytical_blocks_block_view($delta = '') {
     case 'social_media_links':
       $items = array();
       $services = lytical_social_media_services();
-      foreach ($services as $service) {
+      foreach ($services as $service => $class) {
         $lower = strtolower($service);
-        $items[] = l('<i class="fa fa-' . $lower . '"></i>', variable_get('lytical_blocks_' . $lower), array('html' => TRUE));
+        $items[] = l('<i class="fa fa-' . $class . '"></i>', variable_get('lytical_blocks_' . $lower), array('html' => TRUE));
       }
       $variables = array(
         'items' => $items,
         'type' => 'ul'
       );
-      $block['content'] = theme('item_list', $variables);
+      $block['content']['#markup'] = theme('item_list', $variables);
+      $block['content']['#attached'] = array('libraries_load' => array(array('fontawesome')));
       break;
   }
   return $block;
