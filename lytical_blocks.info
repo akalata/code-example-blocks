@@ -2,3 +2,4 @@ name = Lytical Blocks
 description = "Example of a custom block for social media links."
 package = Demo
 core = 7.x
+dependencies[] = fontawesome
